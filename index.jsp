@@ -28,25 +28,25 @@ int serverPort = request.getServerPort();
         <th colspan=2>tomcat test by linwangyi</th>
     </tr>
     <tr>
-        <td>·şÎñÆ÷IP</td>
+        <td>æœåŠ¡å™¨IP</td>
         <td><% String serverIP  = request.getLocalAddr();
 		 out.print( serverIP);%></td> 
     </tr>
     <tr>
-        <td>·şÎñÆ÷tomcat¶Ë¿Ú</td>
+        <td>æœåŠ¡å™¨tomcatç«¯å£</td>
         <td><% int serverPORT = request.getLocalPort();
 		 out.print( serverPORT);%></td> 
     </tr>
 	<tr>
-        <td>·ÃÎÊÖ÷»úÃû³Æ</td>
+        <td>è®¿é—®ä¸»æœºåç§°</td>
         <td><%=serverName%></td>
     </tr>
     <tr>
-        <td>·ÃÎÊ¶Ë¿Ú</td>
+        <td>è®¿é—®ç«¯å£</td>
         <td><%=serverPort%></td>
     </tr>
 	<tr>
-        <td>¸ùÄ¿Â¼¾ø¶ÔÂ·¾¶</td>
+        <td>æ ¹ç›®å½•ç»å¯¹è·¯å¾„</td>
         <td><%out.print( application.getRealPath(request.getRequestURI()) );%> </td>
     </tr>
 	<tr>
@@ -55,10 +55,10 @@ int serverPort = request.getServerPort();
     </tr>
 
 	<tr>
-        <th colspan=2>¿Í»§¶ËĞÅÏ¢</th>
+        <th colspan=2>å®¢æˆ·ç«¯ä¿¡æ¯</th>
     </tr>
     <tr>
-        <td>¿Í»§¶ËIP</td>
+        <td>å®¢æˆ·ç«¯IP</td>
         <td><%
 			String USERHeader=request.getHeader("x-forwarded-for");
 			if (USERHeader != null) {
@@ -69,7 +69,7 @@ int serverPort = request.getServerPort();
 		%></td>
     </tr>
     <tr>
-        <td>User-AgentĞÅÏ¢</td>
+        <td>User-Agentä¿¡æ¯</td>
         <td><% String USERAgent  = request.getHeader("User-Agent");
 		 out.print( USERAgent);%></td> 
     </tr>
