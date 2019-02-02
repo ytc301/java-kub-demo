@@ -1,0 +1,49 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: <APP_NAME>
+  namespace: <NS_NAME>
+spec:
+  replicas: <RS>
+  selector:
+    matchLabels:
+      app: <APP_NAME>
+  template:
+    metadata:
+      labels:
+        app: <APP_NAME>
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/prometheus"
+    spec:
+      volumes:
+      - name: logs-volume
+        hostPath:
+          path: /opt/logs/<NS_NAME>/<APP_NAME>
+      - name: host-time
+        hostPath:
+          path: /etc/localtime
+      containers:
+      - name: <APP_NAME>
+        image: <HARBOR_ADDR>/<NS_NAME>/<APP_NAME>:<BUILD_TAG>
+        imagePullPolicy: Always
+        lifecycle:
+          preStop:
+            exec:
+              # nginx -s quit gracefully terminate while SIGTERM triggers a quick exit
+              command: ["/bin/bash", "-c", "PID=`pidof java` && kill -SIGTERM $PID && while ps -p $PID > /dev/null; do sleep 1; done;"]
+        resources:
+          limits:
+            memory: <MEM>
+            cpu: <CPU>
+        volumeMounts:
+          - mountPath: /opt/logs
+            name: logs-volume
+          - name: host-time
+            mountPath: /etc/localtime
+            readOnly: true
+        ports:
+        - containerPort: 8080
+      imagePullSecrets:
+      - name: <HARBOR_SECRET>

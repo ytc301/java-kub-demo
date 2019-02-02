@@ -1,0 +1,1 @@
+kubectl copy自己对应kubernetes版本的
