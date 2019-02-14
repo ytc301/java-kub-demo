@@ -12,9 +12,7 @@ pipeline {
         checkout scm
         script {
           build_tag = sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-          echo ${build_tag}
           build_tag = "${env.BRANCH_NAME}-${build_tag}"
-          echo ${build_tag}
           app_name = sh(returnStdout: true, script: "git config -l|grep remote.origin.url|awk -F/ '{print \$NF}'|awk -F. '{print \$1}'").trim()
           echo ${app_name}
         }
@@ -59,13 +57,13 @@ pipeline {
           echo '4. Push Docker Image Stage'
           withCredentials(bindings: [usernamePassword(credentialsId: 'harbor', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
             sh """
-                        cp -a /opt/k8s/* ./ \
-                        &&  cp b2b-web/target/b2b.war ./${app_name}.war \
-                        && sed -i "s/<APP_NAME>/${app_name}/g" Dockerfile \
-                        && docker login ${harbor_addr} -u ${dockerHubUser} -p ${dockerHubPassword} \
-                        && docker build -t ${image_name} . \
-                        && docker push ${image_name}
-                        """
+                                    cp -a /opt/k8s/* ./ \
+                                    &&  cp b2b-web/target/b2b.war ./${app_name}.war \
+                                    && sed -i "s/<APP_NAME>/${app_name}/g" Dockerfile \
+                                    && docker login ${harbor_addr} -u ${dockerHubUser} -p ${dockerHubPassword} \
+                                    && docker build -t ${image_name} . \
+                                    && docker push ${image_name}
+                                    """
           }
 
         }
@@ -80,25 +78,25 @@ pipeline {
           }
 
           sh """
-                     if kubectl get deploy ${app_name} -n ${env.BRANCH_NAME}; then
-                       kubectl set image deploy ${app_name} ${app_name}=${image_name} -n ${env.BRANCH_NAME} --record
-                     else
-                       sed -i "s/<APP_NAME>/${app_name}/g" deploy.yaml \
-                       && sed -i "s/<HARBOR_ADDR>/${harbor_addr}/g" deploy.yaml \
-                       && sed -i "s/<NS_NAME>/${env.BRANCH_NAME}/g" deploy.yaml \
-                       && sed -i "s/<BUILD_TAG>/${build_tag}/g" deploy.yaml \
-                       && sed -i "s/<HARBOR_SECRET>/${harbor_secret}/g" deploy.yaml \
-                       && sed -i "s/<RS>/${rs_num}/g" deploy.yaml \
-                       && sed -i "s/<CPU>/${cpu}/g" deploy.yaml \
-                       && sed -i "s/<MEM>/${memory}/g" deploy.yaml \
-                       && kubectl apply -f deploy.yaml --record
-                       if [ ${svc_tag} -eq 1 ]; then
-                         sed -i "s/<APP_NAME>/${app_name}/g" svc.yaml \
-                         && sed -i "s/<NS_NAME>/${env.BRANCH_NAME}/g" svc.yaml \
-                         && kubectl apply -f svc.yaml
-                       fi
-                     fi
-                  """
+                               if kubectl get deploy ${app_name} -n ${env.BRANCH_NAME}; then
+                                 kubectl set image deploy ${app_name} ${app_name}=${image_name} -n ${env.BRANCH_NAME} --record
+                               else
+                                 sed -i "s/<APP_NAME>/${app_name}/g" deploy.yaml \
+                                 && sed -i "s/<HARBOR_ADDR>/${harbor_addr}/g" deploy.yaml \
+                                 && sed -i "s/<NS_NAME>/${env.BRANCH_NAME}/g" deploy.yaml \
+                                 && sed -i "s/<BUILD_TAG>/${build_tag}/g" deploy.yaml \
+                                 && sed -i "s/<HARBOR_SECRET>/${harbor_secret}/g" deploy.yaml \
+                                 && sed -i "s/<RS>/${rs_num}/g" deploy.yaml \
+                                 && sed -i "s/<CPU>/${cpu}/g" deploy.yaml \
+                                 && sed -i "s/<MEM>/${memory}/g" deploy.yaml \
+                                 && kubectl apply -f deploy.yaml --record
+                                 if [ ${svc_tag} -eq 1 ]; then
+                                   sed -i "s/<APP_NAME>/${app_name}/g" svc.yaml \
+                                   && sed -i "s/<NS_NAME>/${env.BRANCH_NAME}/g" svc.yaml \
+                                   && kubectl apply -f svc.yaml
+                                 fi
+                               fi
+                            """
         }
       }
     }
